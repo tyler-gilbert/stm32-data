@@ -1,4 +1,8 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
+
+use anyhow::{anyhow, Ok};
+use chiptool::ir::{BlockItemInner, Enum};
+use stm32_data_serde::chip::core::peripheral::rcc::Mux;
 
 use crate::regex;
 use crate::registers::Registers;
@@ -14,6 +18,139 @@ impl PeripheralToClock {
 
         for (rcc_name, ir) in &registers.registers {
             if let Some(rcc_name) = rcc_name.strip_prefix("rcc_") {
+                let checked_rccs = HashSet::from(["h5", "h50", "h7", "h7ab", "h7rm0433", "g4"]);
+                let prohibited_variants = HashSet::from([
+                    "RCC_PCLK1",
+                    "RCC_PCLK2",
+                    "RCC_PCLK3",
+                    "RCC_PCLK4",
+                    "HSI_KER",
+                    "HSI48_KER",
+                    "CSI_KER",
+                    "LSI_KER",
+                    "PER_CLK",
+                    "RCC_HCLK1",
+                    "RCC_HCLK2",
+                    "RCC_HCLK3",
+                    "RCC_HCLK4",
+                    "PLL3_1",
+                    "NOCLK",
+                    "PLLP",
+                    "PLLQ",
+                    "PLLR",
+                    "SYSCLK",
+                ]);
+
+                let rcc_enum_map: HashMap<&String, HashMap<&String, &Enum>> = {
+                    let rcc_blocks = &ir.blocks.get("RCC").unwrap().items;
+
+                    rcc_blocks
+                        .iter()
+                        .filter_map(|b| match &b.inner {
+                            BlockItemInner::Register(register) => register.fieldset.as_ref().map(|f| {
+                                let f = ir.fieldsets.get(f).unwrap();
+                                (
+                                    &b.name,
+                                    f.fields
+                                        .iter()
+                                        .filter_map(|f| {
+                                            let enumm = f.enumm.as_ref()?;
+                                            let enumm = ir.enums.get(enumm)?;
+
+                                            Some((&f.name, enumm))
+                                        })
+                                        .collect(),
+                                )
+                            }),
+                            _ => None,
+                        })
+                        .collect()
+                };
+
+                let check_mux = |register: &String, field: &String| -> Result<(), anyhow::Error> {
+                    if !checked_rccs.contains(&rcc_name) {
+                        return Ok(());
+                    }
+
+                    let block_map = match rcc_enum_map.get(register) {
+                        Some(block_map) => block_map,
+                        _ => return Ok(()),
+                    };
+
+                    let enumm = match block_map.get(field) {
+                        Some(enumm) => enumm,
+                        _ => return Ok(()),
+                    };
+
+                    for v in &enumm.variants {
+                        if prohibited_variants.contains(v.name.as_str()) {
+                            return Err(anyhow!(
+                                "rcc: prohibited variant name {} for rcc_{}",
+                                v.name.as_str(),
+                                rcc_name
+                            ));
+                        }
+                    }
+
+                    Ok(())
+                };
+
+                let mut family_muxes = HashMap::new();
+                for (reg, body) in &ir.fieldsets {
+                    let key = format!("fieldset/{reg}");
+                    if let Some(_) = regex!(r"^fieldset/CCIPR\d?$").captures(&key) {
+                        for field in &body.fields {
+                            if let Some(peri) = field.name.strip_suffix("SEL") {
+                                if family_muxes.get(peri).is_some() && reg != "CCIPR" {
+                                    continue;
+                                }
+
+                                check_mux(reg, &field.name)?;
+
+                                family_muxes.insert(
+                                    peri.to_string(),
+                                    Mux {
+                                        register: reg.to_ascii_lowercase(),
+                                        field: field.name.to_ascii_lowercase(),
+                                    },
+                                );
+                            }
+                        }
+                    } else if let Some(_) = regex!(r"^fieldset/CFGR\d?$").captures(&key) {
+                        for field in &body.fields {
+                            if let Some(peri) = field.name.strip_suffix("SW") {
+                                check_mux(reg, &field.name)?;
+
+                                family_muxes.insert(
+                                    peri.to_string(),
+                                    Mux {
+                                        register: reg.to_ascii_lowercase(),
+                                        field: field.name.to_ascii_lowercase(),
+                                    },
+                                );
+                            }
+                        }
+                    } else if let Some(_) = regex!(r"^fieldset/D\d?CCIPR$").captures(&key) {
+                        for field in &body.fields {
+                            if let Some(peri) = field.name.strip_suffix("SEL") {
+                                if family_muxes.get(peri).is_some() && reg != "D1CCIPR" {
+                                    continue;
+                                }
+
+                                check_mux(reg, &field.name)?;
+
+                                family_muxes.insert(
+                                    peri.to_string(),
+                                    Mux {
+                                        register: reg.to_ascii_lowercase(),
+                                        field: field.name.to_ascii_lowercase(),
+                                    },
+                                );
+                            }
+                        }
+                    }
+                }
+
                 let mut family_clocks = HashMap::new();
                 for (reg, body) in &ir.fieldsets {
                     let key = format!("fieldset/{reg}");
@@ -43,19 +180,22 @@ impl PeripheralToClock {
                                         rstr.fields.iter().find(|field| field.name == format!("{peri}RST"))
                                     {
                                         reset = Some(stm32_data_serde::chip::core::peripheral::rcc::Reset {
-                                            register: reg.replace("ENR", "RSTR"),
-                                            field: format!("{peri}RST"),
+                                            register: reg.replace("ENR", "RSTR").to_ascii_lowercase(),
+                                            field: format!("{peri}RST").to_ascii_lowercase(),
                                         });
                                     }
                                 }
 
+                                let mux = family_muxes.get(peri).map(|peri| peri.clone());
+
                                 let res = stm32_data_serde::chip::core::peripheral::Rcc {
                                     clock: peri_clock,
                                     enable: stm32_data_serde::chip::core::peripheral::rcc::Enable {
-                                        register: reg.clone(),
-                                        field: field.name.clone(),
+                                        register: reg.to_ascii_lowercase(),
+                                        field: field.name.to_ascii_lowercase(),
                                     },
                                     reset,
+                                    mux,
                                 };
 
                                 family_clocks.insert(peri.to_string(), res);

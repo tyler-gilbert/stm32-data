@@ -254,6 +254,7 @@ impl PeriMatcher {
             ("STM32L4.*:RTC:rtc2_.*", ("rtc", "v2l4", "RTC")),
             ("STM32WBA.*:RTC:rtc2_.*", ("rtc", "v3u5", "RTC")),
             ("STM32WB.*:RTC:rtc2_.*", ("rtc", "v2wb", "RTC")),
+            ("STM32H5.*:RTC:rtc2_.*", ("rtc", "v3u5", "RTC")),
             ("STM32U5.*:RTC:rtc2_.*", ("rtc", "v3u5", "RTC")), // Cube says v2, but it's v3 with security stuff
             (".*:RTC:rtc3_v1_0", ("rtc", "v3", "RTC")),
             (".*:RTC:rtc3_v1_1", ("rtc", "v3", "RTC")),
@@ -297,7 +298,9 @@ impl PeriMatcher {
             ("STM32G0.*:RCC:.*", ("rcc", "g0", "RCC")),
             ("STM32G4.*:RCC:.*", ("rcc", "g4", "RCC")),
             ("STM32H7[AB].*:RCC:.*", ("rcc", "h7ab", "RCC")),
+            ("STM32H7(42|43|53|50).*:RCC:.*", ("rcc", "h7rm0433", "RCC")),
             ("STM32H7.*:RCC:.*", ("rcc", "h7", "RCC")),
+            ("STM32L0.[23].*:RCC:.*", ("rcc", "l0_v2", "RCC")),
             ("STM32L0.*:RCC:.*", ("rcc", "l0", "RCC")),
             ("STM32L1.*:RCC:.*", ("rcc", "l1", "RCC")),
             ("STM32L4.*:RCC:.*", ("rcc", "l4", "RCC")),
@@ -460,6 +463,34 @@ impl PeriMatcher {
             (".*:LCD:lcdc1_v1.3.*", ("lcd", "v2", "LCD")),
             (".*:UID:.*", ("uid", "v1", "UID")),
             (".*:UCPD:.*", ("ucpd", "v1", "UCPD")),
+            ("STM32G0.*:TAMP:.*", ("tamp", "g0", "TAMP")),
+            ("STM32G4.*:TAMP:.*", ("tamp", "g4", "TAMP")),
+            ("STM32L5.*:TAMP:.*", ("tamp", "l5", "TAMP")),
+            ("STM32U5.*:TAMP:.*", ("tamp", "u5", "TAMP")),
+            ("STM32WL.*:TAMP:.*", ("tamp", "wl", "TAMP")),
+            (".*:OCTOSPIM:OCTOSPIM:.*", ("octospim", "v1", "OCTOSPIM")),
+            (
+                "STM32L4.*:OCTOSPI[12]:OCTOSPI:octospi_v1_0.*",
+                ("octospi", "v1", "OCTOSPI"),
+            ),
+            (
+                "STM32H7.*:OCTOSPI[12]:OCTOSPI:octospi_v2_1H7AB.*",
+                ("octospi", "v1", "OCTOSPI"),
+            ),
+            (
+                "STM32U5.*:OCTOSPI[12]:OCTOSPI:octospi1_v3_0.*",
+                ("octospi", "v1", "OCTOSPI"),
+            ),
+            (
+                "STM32L5.*:OCTOSPI[12]:OCTOSPI:octospi_v1_0L5.*",
+                ("octospi", "v2", "OCTOSPI"),
+            ),
+            (
+                "STM32H5.*:OCTOSPI[12]:OCTOSPI:octospi1_v5_1.*",
+                ("octospi", "v2", "OCTOSPI"),
+            ),
+            ("STM32L4.*:GFXMMU:.*", ("gfxmmu", "v1", "GFXMMU")),
+            ("STM32U5.*:GFXMMU:.*", ("gfxmmu", "v2", "GFXMMU")),
         ];
 
         Self {
@@ -492,12 +523,12 @@ fn corename(d: &str) -> String {
 }
 
 fn merge_periph_pins_info(
-    is_f1: bool,
+    chip_name: &str,
     periph_name: &str,
     core_pins: &mut Vec<stm32_data_serde::chip::core::peripheral::Pin>,
     af_pins: &[stm32_data_serde::chip::core::peripheral::Pin],
 ) {
-    if is_f1 {
+    if chip_name.contains("STM32F1") {
         // TODO: actually handle the F1 AFIO information when it will be extracted
         return;
     }
@@ -508,7 +539,7 @@ fn merge_periph_pins_info(
         .map(|v| ((v.pin.as_str(), v.signal.as_str()), v.af))
         .collect();
 
-    for pin in core_pins {
+    for pin in &mut core_pins[..] {
         let af = af_pins.get(&(&pin.pin, &pin.signal)).copied().flatten();
 
         // try to look for a signal with another name
@@ -533,6 +564,15 @@ fn merge_periph_pins_info(
 
         if let Some(af) = af {
             pin.af = Some(af);
+        }
+    }
+
+    // apply some renames
+    if chip_name.starts_with("STM32C0") || chip_name.starts_with("STM32G0") {
+        for pin in &mut core_pins[..] {
+            if pin.signal == "MCO" {
+                pin.signal = "MCO_1".to_string()
+            }
         }
     }
 }
@@ -927,7 +967,7 @@ fn process_core(
         pins.sort();
         pins.dedup();
     }
-    let mut peripherals = Vec::new();
+    let mut peripherals = HashMap::new();
     for (pname, pkind) in peri_kinds {
         // We cannot add this to FAKE peripherals because we need the pins
         if pname.starts_with("I2S") {
@@ -984,7 +1024,7 @@ fn process_core(
             // if the peripheral does not exist in the GPIO xml (one of the notable one is ADC)
             //   it probably doesn't need any AFIO writes to work
             if let Some(af_pins) = chip_af.and_then(|x| x.get(&pname)) {
-                merge_periph_pins_info(chip_name.contains("STM32F1"), &pname, pins, af_pins.as_slice());
+                merge_periph_pins_info(chip_name, &pname, pins, af_pins.as_slice());
             }
             p.pins = pins.clone();
         }
@@ -1000,7 +1040,7 @@ fn process_core(
             // if the peripheral does not exist in the GPIO xml (one of the notable one is ADC)
             //   it probably doesn't need any AFIO writes to work
             if let Some(af_pins) = chip_af.and_then(|x| x.get(&i2s_name)) {
-                merge_periph_pins_info(chip_name.contains("STM32F1"), &i2s_name, i2s_pins, af_pins.as_slice());
+                merge_periph_pins_info(chip_name, &i2s_name, i2s_pins, af_pins.as_slice());
             }
 
             p.pins.extend(i2s_pins.iter().map(|p| Pin {
@@ -1009,6 +1049,9 @@ fn process_core(
                 af: p.af,
             }));
         }
+
+        // sort pins to avoid diff for c pins
+        p.pins.sort_by_key(|x| (x.pin.clone(), x.signal.clone()));
 
         if let Some(peri_irqs) = chip_irqs.get(&pname) {
             use stm32_data_serde::chip::core::peripheral::Interrupt;
@@ -1045,7 +1088,7 @@ fn process_core(
 
             p.interrupts = Some(irqs);
         }
-        peripherals.push(p);
+        peripherals.insert(p.name.clone(), p);
     }
     if let Ok(extra_f) = std::fs::read(format!("data/extra/family/{}.yaml", group.family.as_ref().unwrap())) {
         #[derive(serde::Deserialize)]
@@ -1054,12 +1097,20 @@ fn process_core(
         }
 
         let extra: Extra = serde_yaml::from_slice(&extra_f).unwrap();
-        for p in extra.peripherals {
-            peripherals.push(p);
+        for mut p in extra.peripherals {
+            if let Some(peripheral) = peripherals.get_mut(&p.name) {
+                // Modify the generated peripheral
+                peripheral.pins.append(&mut p.pins);
+            } else if p.address != 0 {
+                // Only insert the peripheral if the address is not the default
+                peripherals.insert(p.name.clone(), p);
+            }
         }
     }
+
+    let have_peris: HashSet<_> = peripherals.keys().cloned().collect();
+    let mut peripherals: Vec<_> = peripherals.into_values().collect();
     peripherals.sort_by_key(|x| x.name.clone());
-    let have_peris: HashSet<_> = peripherals.iter_mut().map(|p| p.name.clone()).collect();
     // Collect DMA versions in the chip
     let mut chip_dmas: Vec<_> = group
         .ips

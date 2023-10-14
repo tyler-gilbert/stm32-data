@@ -84,6 +84,7 @@ pub mod chip {
         #[derive(Clone, Debug, Eq, PartialEq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
         pub struct Peripheral {
             pub name: String,
+            #[serde(default)]
             pub address: u32,
             #[serde(skip_serializing_if = "Option::is_none")]
             pub registers: Option<peripheral::Registers>,
@@ -113,6 +114,8 @@ pub mod chip {
                 pub enable: rcc::Enable,
                 #[serde(skip_serializing_if = "Option::is_none")]
                 pub reset: Option<rcc::Reset>,
+                #[serde(skip_serializing_if = "Option::is_none")]
+                pub mux: Option<rcc::Mux>,
             }
 
             pub mod rcc {
@@ -126,6 +129,12 @@ pub mod chip {
 
                 #[derive(Clone, Debug, Eq, PartialEq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
                 pub struct Reset {
+                    pub register: String,
+                    pub field: String,
+                }
+
+                #[derive(Clone, Debug, Eq, PartialEq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+                pub struct Mux {
                     pub register: String,
                     pub field: String,
                 }
