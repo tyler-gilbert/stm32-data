@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use stm32_data_macros::EnumDebug;
 
 pub mod ir {
     use super::*;
@@ -158,7 +159,7 @@ pub mod ir {
         pub inner: BlockItemInner,
     }
 
-    #[derive(Debug, Eq, PartialEq, Clone, Deserialize)]
+    #[derive(EnumDebug, Eq, PartialEq, Clone, Deserialize)]
     pub enum BlockItemInner {
         Block(BlockItemBlock),
         Register(Register),
@@ -176,7 +177,7 @@ pub mod ir {
         pub block: String,
     }
 
-    #[derive(Debug, Eq, PartialEq, Clone, Deserialize)]
+    #[derive(EnumDebug, Eq, PartialEq, Clone, Deserialize)]
     pub enum Access {
         ReadWrite,
         Read,
@@ -204,7 +205,7 @@ pub mod ir {
         pub enumm: Option<String>,
     }
 
-    #[derive(Debug, Eq, PartialEq, Clone, Deserialize)]
+    #[derive(EnumDebug, Eq, PartialEq, Clone, Deserialize)]
     pub enum Array {
         Regular(RegularArray),
         Cursed(CursedArray),
@@ -263,7 +264,7 @@ pub struct FlashSettings {
     pub erase_value: u8,
 }
 
-#[derive(Debug, Eq, PartialEq, Clone, Deserialize)]
+#[derive(EnumDebug, Eq, PartialEq, Clone, Deserialize)]
 pub enum MemoryRegionKind {
     #[serde(rename = "flash")]
     Flash,
@@ -324,12 +325,22 @@ pub struct PeripheralRcc {
     pub reset: Option<PeripheralRccRegister>,
     #[serde(default)]
     pub mux: Option<PeripheralRccRegister>,
+    #[serde(default)]
+    pub stop_mode: StopMode,
 }
 
 #[derive(Debug, Eq, PartialEq, Clone, Deserialize)]
 pub struct PeripheralRccRegister {
     pub register: String,
     pub field: String,
+}
+
+#[derive(EnumDebug, Eq, PartialEq, Clone, Deserialize, Default)]
+pub enum StopMode {
+    #[default]
+    Stop1, // Peripheral prevents chip from entering Stop1
+    Stop2,   // Peripheral prevents chip from entering Stop2
+    Standby, // Peripheral does not prevent chip from entering Stop
 }
 
 #[derive(Debug, Eq, PartialEq, Clone, Deserialize)]

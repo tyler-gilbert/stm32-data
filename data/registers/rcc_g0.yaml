@@ -953,19 +953,19 @@ fieldset/CR:
   description: Clock control register
   fields:
   - name: HSION
-    description: HSI16 clock enable
+    description: HSI clock enable
     bit_offset: 8
     bit_size: 1
   - name: HSIKERON
-    description: HSI16 always enable for peripheral kernels
+    description: HSI always enable for peripheral kernels
     bit_offset: 9
     bit_size: 1
   - name: HSIRDY
-    description: HSI16 clock ready flag
+    description: HSI clock ready flag
     bit_offset: 10
     bit_size: 1
   - name: HSIDIV
-    description: HSI16 clock division factor
+    description: HSI clock division factor
     bit_offset: 11
     bit_size: 3
     enum: HSIDIV
@@ -1124,11 +1124,11 @@ fieldset/ICSCR:
   description: Internal clock sources calibration register
   fields:
   - name: HSICAL
-    description: HSI16 clock calibration
+    description: HSI clock calibration
     bit_offset: 0
     bit_size: 8
   - name: HSITRIM
-    description: HSI16 clock trimming
+    description: HSI clock trimming
     bit_offset: 8
     bit_size: 7
 fieldset/PLLCFGR:
@@ -1179,20 +1179,20 @@ fieldset/PLLCFGR:
 enum/ADCSEL:
   bit_size: 2
   variants:
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK used as ADC clock source
     value: 0
-  - name: PLLPCLK
+  - name: PLL1_P
     description: PLLPCLK used as ADC clock source
     value: 1
-  - name: HSI16
-    description: HSI16 used as ADC clock source
+  - name: HSI
+    description: HSI used as ADC clock source
     value: 2
 enum/CECSEL:
   bit_size: 1
   variants:
-  - name: HSI16_Div488
-    description: HSI16 divided by 488 used as CEC clock
+  - name: HSI_DIV_488
+    description: HSI divided by 488 used as CEC clock
     value: 0
   - name: LSE
     description: LSE used as CEC clock
@@ -1200,10 +1200,10 @@ enum/CECSEL:
 enum/FDCANSEL:
   bit_size: 2
   variants:
-  - name: PCLK
+  - name: PCLK1
     description: PCLK used as FDCAN clock source
     value: 0
-  - name: PLLQCLK
+  - name: PLL1_Q
     description: PLLQCLK used as FDCAN clock source
     value: 1
   - name: HSE
@@ -1269,26 +1269,26 @@ enum/HSIDIV:
 enum/I2C1SEL:
   bit_size: 2
   variants:
-  - name: PCLK
+  - name: PCLK1
     description: PCLK used as I2C1 clock source
     value: 0
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK used as I2C1 clock source
     value: 1
-  - name: HSI16
-    description: HSI16 used as I2C1 clock source
+  - name: HSI
+    description: HSI used as I2C1 clock source
     value: 2
 enum/I2C2I2S1SEL:
   bit_size: 2
   variants:
-  - name: PCLK
+  - name: PCLK1
     description: PCLK used as I2C2/I2S2 clock source
     value: 0
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK used as I2C2/I2S2 clock source
     value: 1
-  - name: HSI16
-    description: HSI16 used as I2C2/I2S2 clock source
+  - name: HSI
+    description: HSI used as I2C2/I2S2 clock source
     value: 2
   - name: I2S_CKIN
     description: External clock used as I2C2/I2S2 clock source
@@ -1296,13 +1296,13 @@ enum/I2C2I2S1SEL:
 enum/I2S1SEL:
   bit_size: 2
   variants:
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK used as I2S1 clock source
     value: 0
-  - name: PLLPCLK
+  - name: PLL1_P
     description: PLLPCLK used as I2S1 clock source
     value: 1
-  - name: HSI16
+  - name: HSI
     description: HSI used as I2S1 clock source
     value: 2
   - name: I2S_CKIN
@@ -1311,13 +1311,13 @@ enum/I2S1SEL:
 enum/I2S2SEL:
   bit_size: 2
   variants:
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK used as I2S2 clock source
     value: 0
-  - name: PLLPCLK
+  - name: PLL1_P
     description: PLLPCLK used as I2S2 clock source
     value: 1
-  - name: HSI16
+  - name: HSI
     description: HSI used as I2S2 clock source
     value: 2
   - name: I2S_CKIN
@@ -1326,14 +1326,14 @@ enum/I2S2SEL:
 enum/LPTIM1SEL:
   bit_size: 2
   variants:
-  - name: PCLK
+  - name: PCLK1
     description: PCLK used as LPTIM1 clock source
     value: 0
   - name: LSI
     description: LSI used as LPTIM1 clock source
     value: 1
-  - name: HSI16
-    description: HSI16 used as LPTIM1 clock source
+  - name: HSI
+    description: HSI used as LPTIM1 clock source
     value: 2
   - name: LSE
     description: LSE used as LPTIM1 clock source
@@ -1341,14 +1341,14 @@ enum/LPTIM1SEL:
 enum/LPTIM2SEL:
   bit_size: 2
   variants:
-  - name: PCLK
+  - name: PCLK1
     description: PCLK used as LPTIM2 clock source
     value: 0
   - name: LSI
     description: LSI used as LPTIM2 clock source
     value: 1
-  - name: HSI16
-    description: HSI16 used as LPTIM2 clock source
+  - name: HSI
+    description: HSI used as LPTIM2 clock source
     value: 2
   - name: LSE
     description: LSE used as LPTIM2 clock source
@@ -1356,14 +1356,14 @@ enum/LPTIM2SEL:
 enum/LPUART1SEL:
   bit_size: 2
   variants:
-  - name: PCLK
+  - name: PCLK1
     description: PCLK used as LPUART1 clock source
     value: 0
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK used as LPUART1 clock source
     value: 1
-  - name: HSI16
-    description: HSI16 used as LPUART1 clock source
+  - name: HSI
+    description: HSI used as LPUART1 clock source
     value: 2
   - name: LSE
     description: LSE used as LPUART1 clock source
@@ -1371,14 +1371,14 @@ enum/LPUART1SEL:
 enum/LPUART2SEL:
   bit_size: 2
   variants:
-  - name: PCLK
+  - name: PCLK1
     description: PCLK used as LPUART2 clock source
     value: 0
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK used as LPUART2 clock source
     value: 1
-  - name: HSI16
-    description: HSI16 used as LPUART2 clock source
+  - name: HSI
+    description: HSI used as LPUART2 clock source
     value: 2
   - name: LSE
     description: LSE used as LPUART2 clock source
@@ -1437,17 +1437,17 @@ enum/MCOPRE:
 enum/MCOSEL:
   bit_size: 4
   variants:
-  - name: NoClock
+  - name: DISABLE
     description: No clock, MCO output disabled
     value: 0
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK selected as MCO source
     value: 1
   - name: HSI48
     description: HSI48 selected as MCO source
     value: 2
-  - name: HSI16
-    description: HSI16 selected as MCO source
+  - name: HSI
+    description: HSI selected as MCO source
     value: 3
   - name: HSE
     description: HSE selected as MCO source
@@ -1461,10 +1461,10 @@ enum/MCOSEL:
   - name: LSE
     description: LSE selected as MCO source
     value: 7
-  - name: PLLPCLK
+  - name: PLL1_P
     description: PLLPCLK selected as MCO source
     value: 8
-  - name: PLLQCLK
+  - name: PLL1_Q
     description: PLLQCLK selected as MCO source
     value: 9
   - name: RTCCLK
@@ -1755,11 +1755,11 @@ enum/PLLR:
 enum/PLLSRC:
   bit_size: 2
   variants:
-  - name: NoClock
+  - name: DISABLE
     description: No clock selected as PLL entry clock source
     value: 0
-  - name: HSI16
-    description: HSI16 selected as PLL entry clock source
+  - name: HSI
+    description: HSI selected as PLL entry clock source
     value: 2
   - name: HSE
     description: HSE selected as PLL entry clock source
@@ -1800,22 +1800,22 @@ enum/RNGDIV:
 enum/RNGSEL:
   bit_size: 2
   variants:
-  - name: NoClock
+  - name: DISABLE
     description: No clock used as RNG clock source
     value: 0
-  - name: HSI16_Div8
+  - name: HSI_DIV_8
     description: HSI divided by 8 used as RNG clock source
     value: 1
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK used as RNG clock source
     value: 2
-  - name: PLLQCLK
+  - name: PLL1_Q
     description: PLLQCLK used as RNG clock source
     value: 3
 enum/RTCSEL:
   bit_size: 2
   variants:
-  - name: NoClock
+  - name: DISABLE
     description: No clock used as RTC clock
     value: 0
   - name: LSE
@@ -1836,7 +1836,7 @@ enum/SW:
   - name: HSE
     description: HSE selected as system clock
     value: 1
-  - name: PLLRCLK
+  - name: PLL1_R
     description: PLLRCLK selected as system clock
     value: 2
   - name: LSI
@@ -1848,32 +1848,32 @@ enum/SW:
 enum/TIM15SEL:
   bit_size: 1
   variants:
-  - name: TIMPCLK
+  - name: PCLK1_TIM
     description: TIMPCLK used as TIM15 clock source
     value: 0
-  - name: PLLQCLK
+  - name: PLL1_Q
     description: PLLQCLK used as TIM15 clock source
     value: 1
 enum/TIM1SEL:
   bit_size: 1
   variants:
-  - name: TIMPCLK
+  - name: PCLK1_TIM
     description: TIMPCLK used as TIM1 clock source
     value: 0
-  - name: PLLQCLK
+  - name: PLL1_Q
     description: PLLQCLK used as TIM1 clock source
     value: 1
 enum/USART1SEL:
   bit_size: 2
   variants:
-  - name: PCLK
+  - name: PCLK1
     description: PCLK used as USART1 clock source
     value: 0
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK used as USART1 clock source
     value: 1
-  - name: HSI16
-    description: HSI16 used as USART1 clock source
+  - name: HSI
+    description: HSI used as USART1 clock source
     value: 2
   - name: LSE
     description: LSE used as USART1 clock source
@@ -1881,14 +1881,14 @@ enum/USART1SEL:
 enum/USART2SEL:
   bit_size: 2
   variants:
-  - name: PCLK
+  - name: PCLK1
     description: PCLK used as USART2 clock source
     value: 0
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK used as USART2 clock source
     value: 1
-  - name: HSI16
-    description: HSI16 used as USART2 clock source
+  - name: HSI
+    description: HSI used as USART2 clock source
     value: 2
   - name: LSE
     description: LSE used as USART2 clock source
@@ -1896,14 +1896,14 @@ enum/USART2SEL:
 enum/USART3SEL:
   bit_size: 2
   variants:
-  - name: PCLK
+  - name: PCLK1
     description: PCLK used as USART3 clock source
     value: 0
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK used as USART3 clock source
     value: 1
-  - name: HSI16
-    description: HSI16 used as USART3 clock source
+  - name: HSI
+    description: HSI used as USART3 clock source
     value: 2
   - name: LSE
     description: LSE used as USART3 clock source
@@ -1914,7 +1914,7 @@ enum/USBSEL:
   - name: HSI48
     description: HSI48 used as USB clock source
     value: 0
-  - name: PLLQCLK
+  - name: PLL1_Q
     description: PLLQCLK used as USB clock source
     value: 1
   - name: HSE

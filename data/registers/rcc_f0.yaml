@@ -757,7 +757,7 @@ fieldset/CSR:
 enum/CECSW:
   bit_size: 1
   variants:
-  - name: HSI_Div244
+  - name: HSI_DIV_244
     description: HSI clock divided by 244 selected as CEC clock source
     value: 0
   - name: LSE
@@ -799,7 +799,7 @@ enum/ICSW:
   - name: HSI
     description: HSI clock selected as I2C clock source
     value: 0
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK clock selected as I2C clock source
     value: 1
 enum/LSEDRV:
@@ -859,7 +859,7 @@ enum/MCOSEL:
   - name: LSE
     description: External low speed (LSE) oscillator clock selected
     value: 3
-  - name: SYSCLK
+  - name: SYS
     description: System clock selected
     value: 4
   - name: HSI
@@ -1027,7 +1027,7 @@ enum/PREDIV:
 enum/RTCSEL:
   bit_size: 2
   variants:
-  - name: NoClock
+  - name: DISABLE
     description: No clock
     value: 0
   - name: LSE
@@ -1048,7 +1048,7 @@ enum/SW:
   - name: HSE
     description: HSE oscillator used as system clock
     value: 1
-  - name: PLL
+  - name: PLL1_P
     description: PLL used as system clock
     value: 2
   - name: HSI48
@@ -1057,10 +1057,10 @@ enum/SW:
 enum/USARTSW:
   bit_size: 2
   variants:
-  - name: PCLK
+  - name: PCLK1
     description: PCLK selected as USART clock source
     value: 0
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK selected as USART clock source
     value: 1
   - name: LSE
@@ -1075,6 +1075,6 @@ enum/USBSW:
   - name: HSI48
     description: NOT ALLOWED IN F0x0 - HSI48 selected as USB clock source
     value: 0
-  - name: PLLCLK
+  - name: PLL1_P
     description: PLL clock selected as USB clock source
     value: 1

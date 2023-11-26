@@ -1,11 +1,34 @@
+use std::cmp::Ordering;
+use std::collections::hash_map::Entry;
 use std::collections::{HashMap, HashSet};
+use std::hash::Hash;
 
 use anyhow::{anyhow, Ok};
 use chiptool::ir::{BlockItemInner, Enum};
-use stm32_data_serde::chip::core::peripheral::rcc::Mux;
+use stm32_data_serde::chip::core::peripheral;
+use stm32_data_serde::chip::core::peripheral::rcc::{Mux, StopMode};
 
 use crate::regex;
 use crate::registers::Registers;
+
+/// Deterministically insert into a `HashMap`
+fn insert_into_map<K, V, F>(hash_map: &mut HashMap<K, V>, key: K, value: V, mut compare: F)
+where
+    K: Eq + Hash,
+    F: FnMut(&V, &V) -> Ordering,
+{
+    match hash_map.entry(key) {
+        Entry::Vacant(e) => {
+            e.insert(value);
+        }
+        Entry::Occupied(mut e) => match compare(&value, e.get()) {
+            Ordering::Less => {
+                e.insert(value);
+            }
+            _ => {}
+        },
+    };
+}
 
 #[derive(Debug)]
 pub struct PeripheralToClock(
@@ -15,33 +38,82 @@ pub struct PeripheralToClock(
 impl PeripheralToClock {
     pub fn parse(registers: &Registers) -> anyhow::Result<Self> {
         let mut peripheral_to_clock = HashMap::new();
+        let allowed_variants = HashSet::from([
+            "DISABLE",
+            "SYS",
+            "PCLK1",
+            "PCLK1_TIM",
+            "PCLK2",
+            "PCLK2_TIM",
+            "PCLK3",
+            "PCLK4",
+            "PCLK5",
+            "PCLK6",
+            "PCLK7",
+            "HCLK1",
+            "HCLK2",
+            "HCLK3",
+            "HCLK4",
+            "HCLK5",
+            "HCLK6",
+            "HCLK7",
+            "PLLI2S1_P",
+            "PLLI2S1_Q",
+            "PLLI2S1_R",
+            "PLLI2S2_P",
+            "PLLI2S2_Q",
+            "PLLI2S2_R",
+            "PLLSAI1_P",
+            "PLLSAI1_Q",
+            "PLLSAI1_R",
+            "PLLSAI2_P",
+            "PLLSAI2_Q",
+            "PLLSAI2_R",
+            "PLL1_P",
+            "PLL1_Q",
+            "PLL1_R",
+            "PLL1_VCO", // used for L0 USB
+            "PLL2_P",
+            "PLL2_Q",
+            "PLL2_R",
+            "PLL3_P",
+            "PLL3_Q",
+            "PLL3_R",
+            "HSI",
+            "SHSI",
+            "HSI48",
+            "LSI",
+            "CSI",
+            "MSI",
+            "MSIS",
+            "MSIK",
+            "HSE",
+            "LSE",
+            "AUDIOCLK",
+            "PER",
+            "CLK48",
+            // TODO: variants to cleanup
+            "SAI1_EXTCLK",
+            "SAI2_EXTCLK",
+            "B_0x0",
+            "B_0x1",
+            "I2S_CKIN",
+            "DAC_HOLD",
+            "DAC_HOLD_2",
+            "RTCCLK",
+            "RTC_WKUP",
+            "DSIPHY",
+            "ICLK",
+            "DCLK",
+            "HSI256_MSIS1024_MSIS4",
+            "HSI256_MSIS1024_MSIK4",
+            "HSI256_MSIK1024_MSIS4",
+            "HSI256_MSIK1024_MSIK4",
+        ]);
 
         for (rcc_name, ir) in &registers.registers {
             if let Some(rcc_name) = rcc_name.strip_prefix("rcc_") {
-                let checked_rccs = HashSet::from(["h5", "h50", "h7", "h7ab", "h7rm0433", "g4"]);
-                let prohibited_variants = HashSet::from([
-                    "RCC_PCLK1",
-                    "RCC_PCLK2",
-                    "RCC_PCLK3",
-                    "RCC_PCLK4",
-                    "HSI_KER",
-                    "HSI48_KER",
-                    "CSI_KER",
-                    "LSI_KER",
-                    "PER_CLK",
-                    "RCC_HCLK1",
-                    "RCC_HCLK2",
-                    "RCC_HCLK3",
-                    "RCC_HCLK4",
-                    "PLL3_1",
-                    "NOCLK",
-                    "PLLP",
-                    "PLLQ",
-                    "PLLR",
-                    "SYSCLK",
-                ]);
-
-                let rcc_enum_map: HashMap<&String, HashMap<&String, &Enum>> = {
+                let rcc_enum_map: HashMap<&String, HashMap<&String, (&String, &Enum)>> = {
                     let rcc_blocks = &ir.blocks.get("RCC").unwrap().items;
 
                     rcc_blocks
@@ -54,10 +126,10 @@ impl PeripheralToClock {
                                     f.fields
                                         .iter()
                                         .filter_map(|f| {
-                                            let enumm = f.enumm.as_ref()?;
-                                            let enumm = ir.enums.get(enumm)?;
+                                            let enumm_name = f.enumm.as_ref()?;
+                                            let enumm = ir.enums.get(enumm_name)?;
 
-                                            Some((&f.name, enumm))
+                                            Some((&f.name, (enumm_name, enumm)))
                                         })
                                         .collect(),
                                 )
@@ -68,25 +140,33 @@ impl PeripheralToClock {
                 };
 
                 let check_mux = |register: &String, field: &String| -> Result<(), anyhow::Error> {
-                    if !checked_rccs.contains(&rcc_name) {
-                        return Ok(());
-                    }
-
                     let block_map = match rcc_enum_map.get(register) {
                         Some(block_map) => block_map,
                         _ => return Ok(()),
                     };
 
-                    let enumm = match block_map.get(field) {
+                    let (enumm_name, enumm) = match block_map.get(field) {
                         Some(enumm) => enumm,
                         _ => return Ok(()),
                     };
 
                     for v in &enumm.variants {
-                        if prohibited_variants.contains(v.name.as_str()) {
+                        if let Some(captures) = regex!(r"^([A-Z0-9_]+)_DIV_\d+?$").captures(v.name.as_str()) {
+                            let name = captures.get(1).unwrap();
+
+                            if !allowed_variants.contains(name.as_str()) {
+                                return Err(anyhow!(
+                                    "rcc: prohibited variant name {} in enum {} for rcc_{}",
+                                    v.name.as_str(),
+                                    enumm_name,
+                                    rcc_name
+                                ));
+                            }
+                        } else if !allowed_variants.contains(v.name.as_str()) {
                             return Err(anyhow!(
-                                "rcc: prohibited variant name {} for rcc_{}",
+                                "rcc: prohibited variant name {} in enum {} for rcc_{}",
                                 v.name.as_str(),
+                                enumm_name,
                                 rcc_name
                             ));
                         }
@@ -101,18 +181,16 @@ impl PeripheralToClock {
                     if let Some(_) = regex!(r"^fieldset/CCIPR\d?$").captures(&key) {
                         for field in &body.fields {
                             if let Some(peri) = field.name.strip_suffix("SEL") {
-                                if family_muxes.get(peri).is_some() && reg != "CCIPR" {
-                                    continue;
-                                }
-
                                 check_mux(reg, &field.name)?;
 
-                                family_muxes.insert(
+                                insert_into_map(
+                                    &mut family_muxes,
                                     peri.to_string(),
                                     Mux {
                                         register: reg.to_ascii_lowercase(),
                                         field: field.name.to_ascii_lowercase(),
                                     },
+                                    |mux1: &Mux, mux2: &Mux| mux1.register.cmp(&mux2.register),
                                 );
                             }
                         }
@@ -121,12 +199,14 @@ impl PeripheralToClock {
                             if let Some(peri) = field.name.strip_suffix("SW") {
                                 check_mux(reg, &field.name)?;
 
-                                family_muxes.insert(
+                                insert_into_map(
+                                    &mut family_muxes,
                                     peri.to_string(),
                                     Mux {
                                         register: reg.to_ascii_lowercase(),
                                         field: field.name.to_ascii_lowercase(),
                                     },
+                                    |mux1: &Mux, mux2: &Mux| mux1.register.cmp(&mux2.register),
                                 );
                             }
                         }
@@ -139,12 +219,14 @@ impl PeripheralToClock {
 
                                 check_mux(reg, &field.name)?;
 
-                                family_muxes.insert(
+                                insert_into_map(
+                                    &mut family_muxes,
                                     peri.to_string(),
                                     Mux {
                                         register: reg.to_ascii_lowercase(),
                                         field: field.name.to_ascii_lowercase(),
                                     },
+                                    |mux1: &Mux, mux2: &Mux| mux1.register.cmp(&mux2.register),
                                 );
                             }
                         }
@@ -164,6 +246,13 @@ impl PeripheralToClock {
                         for field in &body.fields {
                             if let Some(peri) = field.name.strip_suffix("EN") {
                                 let peri = if peri == "RTCAPB" { "RTC" } else { peri };
+                                let stop_mode = if peri == "RTC" {
+                                    StopMode::Standby
+                                } else if peri.starts_with("LP") {
+                                    StopMode::Stop2
+                                } else {
+                                    StopMode::Stop1
+                                };
 
                                 // Timers are a bit special, they may have a x2 freq
                                 let peri_clock = {
@@ -188,17 +277,26 @@ impl PeripheralToClock {
 
                                 let mux = family_muxes.get(peri).map(|peri| peri.clone());
 
-                                let res = stm32_data_serde::chip::core::peripheral::Rcc {
-                                    clock: peri_clock,
-                                    enable: stm32_data_serde::chip::core::peripheral::rcc::Enable {
-                                        register: reg.to_ascii_lowercase(),
-                                        field: field.name.to_ascii_lowercase(),
-                                    },
-                                    reset,
-                                    mux,
+                                match family_clocks.entry(peri.to_string()) {
+                                    Entry::Vacant(e) => {
+                                        e.insert(peripheral::Rcc {
+                                            clock: peri_clock
+                                                .to_ascii_lowercase()
+                                                .replace("ahb", "hclk")
+                                                .replace("apb", "pclk"),
+                                            enable: peripheral::rcc::Enable {
+                                                register: reg.to_ascii_lowercase(),
+                                                field: field.name.to_ascii_lowercase(),
+                                            },
+                                            stop_mode,
+                                            reset,
+                                            mux,
+                                        });
+                                    }
+                                    Entry::Occupied(_) => {
+                                        return Err(anyhow!("rcc: duplicate clock for {} for rcc_{}", peri, rcc_name));
+                                    }
                                 };
-
-                                family_clocks.insert(peri.to_string(), res);
                             }
                         }
                     }

@@ -724,7 +724,7 @@ enum/HPRE:
 enum/I2S2SRC:
   bit_size: 1
   variants:
-  - name: SYSCLK
+  - name: SYS
     description: System clock (SYSCLK) selected as I2S clock entry
     value: 0
   - name: PLL3
@@ -736,7 +736,7 @@ enum/MCOSEL:
   - name: NoMCO
     description: MCO output disabled, no clock on MCO
     value: 0
-  - name: SYSCLK
+  - name: SYS
     description: System clock selected
     value: 4
   - name: HSI
@@ -913,7 +913,7 @@ enum/PREDIV1SRC:
 enum/RTCSEL:
   bit_size: 2
   variants:
-  - name: NoClock
+  - name: DISABLE
     description: No clock
     value: 0
   - name: LSE
@@ -934,7 +934,7 @@ enum/SW:
   - name: HSE
     description: HSE oscillator used as system clock
     value: 1
-  - name: PLL
+  - name: PLL1_P
     description: PLL used as system clock
     value: 2
 enum/USBPRE:

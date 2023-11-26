@@ -402,7 +402,7 @@ fieldset/CICR:
     bit_offset: 1
     bit_size: 1
   - name: HSIRDYC
-    description: "HSI16 ready interrupt clear\r This bit is set software to clear the HSIRDYF flag."
+    description: "HSI ready interrupt clear\r This bit is set software to clear the HSIRDYF flag."
     bit_offset: 3
     bit_size: 1
   - name: HSERDYC
@@ -429,7 +429,7 @@ fieldset/CIER:
     bit_offset: 1
     bit_size: 1
   - name: HSIRDYIE
-    description: "HSI16 ready interrupt enable\r Set and cleared by software to enable/disable interrupt caused by the HSI16 oscillator stabilization:"
+    description: "HSI ready interrupt enable\r Set and cleared by software to enable/disable interrupt caused by the HSI oscillator stabilization:"
     bit_offset: 3
     bit_size: 1
   - name: HSERDYIE
@@ -448,7 +448,7 @@ fieldset/CIFR:
     bit_offset: 1
     bit_size: 1
   - name: HSIRDYF
-    description: "HSI16 ready interrupt flag\r This flag indicates a pending interrupt upon HSI16 clock getting ready.\r Set by hardware when the HSI16 clock becomes stable and HSIRDYIE is set in response to setting the HSION (refer to ). When HSION is not set but the HSI16 oscillator is enabled by the peripheral through a clock request, this bit is not set and no interrupt is generated.\r Cleared by software setting the HSIRDYC bit."
+    description: "HSI ready interrupt flag\r This flag indicates a pending interrupt upon HSI clock getting ready.\r Set by hardware when the HSI clock becomes stable and HSIRDYIE is set in response to setting the HSION (refer to ). When HSION is not set but the HSI oscillator is enabled by the peripheral through a clock request, this bit is not set and no interrupt is generated.\r Cleared by software setting the HSIRDYC bit."
     bit_offset: 3
     bit_size: 1
   - name: HSERDYF
@@ -685,10 +685,10 @@ fieldset/ICSCR:
 enum/ADCSEL:
   bit_size: 2
   variants:
-  - name: SYSCLK
+  - name: SYS
     description: System clock
     value: 0
-  - name: HSIKER
+  - name: HSI
     description: HSIKER
     value: 2
 enum/HPRE:
@@ -778,22 +778,22 @@ enum/HSIKERDIV:
 enum/I2C1SEL:
   bit_size: 2
   variants:
-  - name: PCLK
+  - name: PCLK1
     description: PCLK
     value: 0
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK
     value: 1
-  - name: HSIKER
+  - name: HSI
     description: HSIKER
     value: 2
 enum/I2S1SEL:
   bit_size: 2
   variants:
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK
     value: 0
-  - name: HSIKER
+  - name: HSI
     description: HSIKER
     value: 2
   - name: I2S_CKIN
@@ -853,10 +853,10 @@ enum/MCOPRE:
 enum/MCOSEL:
   bit_size: 4
   variants:
-  - name: NoClock
+  - name: DISABLE
     description: No clock, MCO output disabled
     value: 0
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK selected as MCO source
     value: 1
   - name: HSI48
@@ -892,7 +892,7 @@ enum/PPRE:
 enum/RTCSEL:
   bit_size: 2
   variants:
-  - name: NoClock
+  - name: DISABLE
     description: No clock used as RTC clock
     value: 0
   - name: LSE
@@ -949,13 +949,13 @@ enum/SYSDIV:
 enum/USART1SEL:
   bit_size: 2
   variants:
-  - name: PCLK
+  - name: PCLK1
     description: PCLK
     value: 0
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK
     value: 1
-  - name: HSIKER
+  - name: HSI
     description: HSIKER
     value: 2
   - name: LSE

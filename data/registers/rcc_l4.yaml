@@ -127,10 +127,6 @@ block/RCC:
     description: Clock recovery RC register
     byte_offset: 152
     fieldset: CRRCR
-  - name: CCIPR2
-    description: Peripherals independent clock configuration register
-    byte_offset: 156
-    fieldset: CCIPR2
 fieldset/AHB1ENR:
   description: AHB1 peripheral clock enable register
   fields:
@@ -141,10 +137,6 @@ fieldset/AHB1ENR:
   - name: DMA2EN
     description: DMA2 clock enable
     bit_offset: 1
-    bit_size: 1
-  - name: DMAMUX1EN
-    description: DMAMUX clock enable
-    bit_offset: 2
     bit_size: 1
   - name: FLASHEN
     description: Flash memory interface clock enable
@@ -162,10 +154,6 @@ fieldset/AHB1ENR:
     description: DMA2D clock enable
     bit_offset: 17
     bit_size: 1
-  - name: GFXMMUEN
-    description: Graphic MMU clock enable
-    bit_offset: 18
-    bit_size: 1
 fieldset/AHB1RSTR:
   description: AHB1 peripheral reset register
   fields:
@@ -176,10 +164,6 @@ fieldset/AHB1RSTR:
   - name: DMA2RST
     description: DMA2 reset
     bit_offset: 1
-    bit_size: 1
-  - name: DMAMUX1RST
-    description: DMAMUX1RST
-    bit_offset: 2
     bit_size: 1
   - name: FLASHRST
     description: Flash memory interface reset
@@ -197,10 +181,6 @@ fieldset/AHB1RSTR:
     description: DMA2D reset
     bit_offset: 17
     bit_size: 1
-  - name: GFXMMURST
-    description: GFXMMU reset
-    bit_offset: 18
-    bit_size: 1
 fieldset/AHB1SMENR:
   description: AHB1 peripheral clocks enable in Sleep and Stop modes register
   fields:
@@ -211,10 +191,6 @@ fieldset/AHB1SMENR:
   - name: DMA2SMEN
     description: DMA2 clocks enable during Sleep and Stop modes
     bit_offset: 1
-    bit_size: 1
-  - name: DMAMUX1SMEN
-    description: DMAMUX clock enable during Sleep and Stop modes
-    bit_offset: 2
     bit_size: 1
   - name: FLASHSMEN
     description: Flash memory interface clocks enable during Sleep and Stop modes
@@ -235,10 +211,6 @@ fieldset/AHB1SMENR:
   - name: DMA2DSMEN
     description: DMA2D clock enable during Sleep and Stop modes
     bit_offset: 17
-    bit_size: 1
-  - name: GFXMMUSMEN
-    description: GFXMMU clock enable during Sleep and Stop modes
-    bit_offset: 18
     bit_size: 1
 fieldset/AHB2ENR:
   description: AHB2 peripheral clock enable register
@@ -303,14 +275,6 @@ fieldset/AHB2ENR:
     description: Random Number Generator clock enable
     bit_offset: 18
     bit_size: 1
-  - name: OSPIMEN
-    description: OctoSPI IO manager clock enable
-    bit_offset: 20
-    bit_size: 1
-  - name: SDMMC1EN
-    description: SDMMC1 clock enable
-    bit_offset: 22
-    bit_size: 1
 fieldset/AHB2RSTR:
   description: AHB2 peripheral reset register
   fields:
@@ -374,14 +338,6 @@ fieldset/AHB2RSTR:
     description: Random number generator reset
     bit_offset: 18
     bit_size: 1
-  - name: OSPIMRST
-    description: OCTOSPI IO manager reset
-    bit_offset: 20
-    bit_size: 1
-  - name: SDMMC1RST
-    description: SDMMC1 reset
-    bit_offset: 22
-    bit_size: 1
 fieldset/AHB2SMENR:
   description: AHB2 peripheral clocks enable in Sleep and Stop modes register
   fields:
@@ -425,10 +381,6 @@ fieldset/AHB2SMENR:
     description: SRAM2 interface clocks enable during Sleep and Stop modes
     bit_offset: 9
     bit_size: 1
-  - name: SRAM3SMEN
-    description: SRAM2 interface clocks enable during Sleep and Stop modes
-    bit_offset: 10
-    bit_size: 1
   - name: USB_OTG_FSSMEN
     description: OTG full speed clocks enable during Sleep and Stop modes
     bit_offset: 12
@@ -445,10 +397,6 @@ fieldset/AHB2SMENR:
     description: AES accelerator clocks enable during Sleep and Stop modes
     bit_offset: 16
     bit_size: 1
-  - name: HASH1SMEN
-    description: HASH clock enable during Sleep and Stop modes
-    bit_offset: 17
-    bit_size: 1
   - name: HASHSMEN
     description: HASH clock enable during Sleep and Stop modes
     bit_offset: 17
@@ -457,14 +405,6 @@ fieldset/AHB2SMENR:
     description: Random Number Generator clocks enable during Sleep and Stop modes
     bit_offset: 18
     bit_size: 1
-  - name: OSPIMSMEN
-    description: OctoSPI IO manager clocks enable during Sleep and Stop modes
-    bit_offset: 20
-    bit_size: 1
-  - name: SDMMC1SMEN
-    description: SDMMC1 clocks enable during Sleep and Stop modes
-    bit_offset: 22
-    bit_size: 1
 fieldset/AHB3ENR:
   description: AHB3 peripheral clock enable register
   fields:
@@ -472,13 +412,9 @@ fieldset/AHB3ENR:
     description: Flexible memory controller clock enable
     bit_offset: 0
     bit_size: 1
-  - name: QUADSPIEN
-    description: QUADSPIEN
+  - name: QSPIEN
+    description: QSPIEN
     bit_offset: 8
-    bit_size: 1
-  - name: OSPI2EN
-    description: OSPI2EN memory interface clock enable
-    bit_offset: 9
     bit_size: 1
 fieldset/AHB3RSTR:
   description: AHB3 peripheral reset register
@@ -491,10 +427,6 @@ fieldset/AHB3RSTR:
     description: Quad SPI memory interface reset
     bit_offset: 8
     bit_size: 1
-  - name: OSPI2RST
-    description: OctOSPI2 memory interface reset
-    bit_offset: 9
-    bit_size: 1
 fieldset/AHB3SMENR:
   description: AHB3 peripheral clocks enable in Sleep and Stop modes register
   fields:
@@ -505,10 +437,6 @@ fieldset/AHB3SMENR:
   - name: QSPISMEN
     description: QSPISMEN
     bit_offset: 8
-    bit_size: 1
-  - name: OCTOSPI2
-    description: OctoSPI2 memory interface clocks enable during Sleep and Stop modes
-    bit_offset: 9
     bit_size: 1
 fieldset/APB1ENR1:
   description: APB1ENR1
@@ -689,6 +617,10 @@ fieldset/APB1RSTR1:
     bit_size: 1
   - name: UART4RST
     description: UART4 reset
+    bit_offset: 19
+    bit_size: 1
+  - name: USART4RST
+    description: USART4 reset.
     bit_offset: 19
     bit_size: 1
   - name: UART5RST
@@ -935,21 +867,9 @@ fieldset/APB2ENR:
     description: SAI2 clock enable
     bit_offset: 22
     bit_size: 1
-  - name: DFSDM1EN
+  - name: DFSDM_TIMEN
     description: DFSDM timer clock enable
     bit_offset: 24
-    bit_size: 1
-  - name: DFSDMEN
-    description: DFSDM timer clock enable
-    bit_offset: 24
-    bit_size: 1
-  - name: LTDCEN
-    description: LCD-TFT clock enable
-    bit_offset: 26
-    bit_size: 1
-  - name: DSIEN
-    description: DSI clock enable
-    bit_offset: 27
     bit_size: 1
 fieldset/APB2RSTR:
   description: APB2 peripheral reset register
@@ -998,21 +918,9 @@ fieldset/APB2RSTR:
     description: Serial audio interface 2 (SAI2) reset
     bit_offset: 22
     bit_size: 1
-  - name: DFSDM1RST
-    description: Digital filters for sigma-delata modulators (DFSDM) reset
-    bit_offset: 24
-    bit_size: 1
   - name: DFSDMRST
     description: DFSDM filter reset
     bit_offset: 24
-    bit_size: 1
-  - name: LTDCRST
-    description: LCD-TFT reset
-    bit_offset: 26
-    bit_size: 1
-  - name: DSIRST
-    description: DSI reset
-    bit_offset: 27
     bit_size: 1
 fieldset/APB2SMENR:
   description: APB2SMENR
@@ -1061,21 +969,9 @@ fieldset/APB2SMENR:
     description: SAI2 clocks enable during Sleep and Stop modes
     bit_offset: 22
     bit_size: 1
-  - name: DFSDM1SMEN
-    description: DFSDM timer clocks enable during Sleep and Stop modes
-    bit_offset: 24
-    bit_size: 1
   - name: DFSDMSMEN
     description: DFSDM timer clocks enable during Sleep and Stop modes
     bit_offset: 24
-    bit_size: 1
-  - name: LTDCSMEN
-    description: LCD-TFT timer clocks enable during Sleep and Stop modes
-    bit_offset: 26
-    bit_size: 1
-  - name: DSISMEN
-    description: DSI clocks enable during Sleep and Stop modes
-    bit_offset: 27
     bit_size: 1
 fieldset/BDCR:
   description: BDCR
@@ -1126,6 +1022,7 @@ fieldset/BDCR:
     description: Low speed clock output selection
     bit_offset: 25
     bit_size: 1
+    enum: LSCOSEL
 fieldset/CCIPR:
   description: CCIPR
   fields:
@@ -1133,109 +1030,87 @@ fieldset/CCIPR:
     description: USART1 clock source selection
     bit_offset: 0
     bit_size: 2
+    enum: USART1SEL
   - name: USART2SEL
     description: USART2 clock source selection
     bit_offset: 2
     bit_size: 2
+    enum: USART2SEL
   - name: USART3SEL
     description: USART3 clock source selection
     bit_offset: 4
     bit_size: 2
+    enum: USART3SEL
   - name: UART4SEL
     description: UART4 clock source selection
     bit_offset: 6
     bit_size: 2
+    enum: UART4SEL
   - name: UART5SEL
     description: UART5 clock source selection
     bit_offset: 8
     bit_size: 2
+    enum: UART5SEL
   - name: LPUART1SEL
     description: LPUART1 clock source selection
     bit_offset: 10
     bit_size: 2
+    enum: LPUART1SEL
   - name: I2C1SEL
     description: I2C1 clock source selection
     bit_offset: 12
     bit_size: 2
+    enum: I2C1SEL
   - name: I2C2SEL
     description: I2C2 clock source selection
     bit_offset: 14
     bit_size: 2
+    enum: I2C2SEL
   - name: I2C3SEL
     description: I2C3 clock source selection
     bit_offset: 16
     bit_size: 2
+    enum: I2C3SEL
   - name: LPTIM1SEL
     description: Low power timer 1 clock source selection
     bit_offset: 18
     bit_size: 2
+    enum: LPTIM1SEL
   - name: LPTIM2SEL
     description: Low power timer 2 clock source selection
     bit_offset: 20
     bit_size: 2
+    enum: LPTIM2SEL
   - name: SAI1SEL
     description: SAI1 clock source selection
     bit_offset: 22
     bit_size: 2
+    enum: SAI1SEL
   - name: SAI2SEL
     description: SAI2 clock source selection
     bit_offset: 24
     bit_size: 2
+    enum: SAI2SEL
   - name: CLK48SEL
     description: 48 MHz clock source selection
     bit_offset: 26
     bit_size: 2
+    enum: CLK48SEL
   - name: ADCSEL
     description: ADCs clock source selection
     bit_offset: 28
     bit_size: 2
+    enum: ADCSEL
   - name: SWPMI1SEL
     description: SWPMI1 clock source selection
     bit_offset: 30
     bit_size: 1
+    enum: SWPMI1SEL
   - name: DFSDMSEL
     description: DFSDM clock source selection
     bit_offset: 31
     bit_size: 1
-fieldset/CCIPR2:
-  description: Peripherals independent clock configuration register
-  fields:
-  - name: I2C4SEL
-    description: I2C4 clock source selection
-    bit_offset: 0
-    bit_size: 2
-  - name: DFSDMSEL
-    description: Digital filter for sigma delta modulator kernel clock source selection
-    bit_offset: 2
-    bit_size: 1
-  - name: ADFSDMSEL
-    description: Digital filter for sigma delta modulator audio clock source selection
-    bit_offset: 3
-    bit_size: 2
-  - name: SAI1SEL
-    description: SAI1 clock source selection
-    bit_offset: 5
-    bit_size: 3
-  - name: SAI2SEL
-    description: SAI2 clock source selection
-    bit_offset: 8
-    bit_size: 3
-  - name: DSISEL
-    description: clock selection
-    bit_offset: 12
-    bit_size: 1
-  - name: SDMMCSEL
-    description: SDMMC clock selection
-    bit_offset: 14
-    bit_size: 1
-  - name: PLLSAI2DIVR
-    description: division factor for LTDC clock
-    bit_offset: 16
-    bit_size: 2
-  - name: OSPISEL
-    description: Octospi clock source selection
-    bit_offset: 20
-    bit_size: 2
+    enum: DFSDMSEL
 fieldset/CFGR:
   description: Clock configuration register
   fields:
@@ -1435,6 +1310,7 @@ fieldset/CR:
     description: MSI clock range selection
     bit_offset: 3
     bit_size: 1
+    enum: MSIRGSEL
   - name: MSIRANGE
     description: MSI clock ranges
     bit_offset: 4
@@ -1592,7 +1468,7 @@ fieldset/PLLCFGR:
   - name: PLLM
     description: Division factor for the main PLL and audio PLL (PLLSAI1 and PLLSAI2) input clock
     bit_offset: 4
-    bit_size: 4
+    bit_size: 3
     enum: PLLM
   - name: PLLN
     description: Main PLL multiplication factor for VCO
@@ -1634,11 +1510,6 @@ fieldset/PLLCFGR:
 fieldset/PLLSAICFGR:
   description: PLLSAI configuration register
   fields:
-  - name: PLLM
-    description: Division factor for PLLSAI input clock
-    bit_offset: 4
-    bit_size: 4
-    enum: PLLM
   - name: PLLN
     description: SAI1PLL multiplication factor for VCO
     bit_offset: 8
@@ -1676,6 +1547,42 @@ fieldset/PLLSAICFGR:
     bit_offset: 27
     bit_size: 5
     enum: PLLP
+enum/ADCSEL:
+  bit_size: 2
+  variants:
+  - name: DISABLE
+    description: No clock selected
+    value: 0
+  - name: PLL1_Q
+    description: PLLADC1CLK clock selected
+    value: 1
+  - name: SYS
+    description: SYSCLK clock selected
+    value: 3
+enum/CLK48SEL:
+  bit_size: 2
+  variants:
+  - name: HSI48
+    description: HSI48 clock selected (only for STM32L41x/L42x/L43x/L44x/L45x/L46x/L49x/L4Ax devices, otherwise no clock selected)
+    value: 0
+  - name: PLLSAI1_Q
+    description: PLLSAI1_Q aka PLL48M1CLK clock selected
+    value: 1
+  - name: PLL1_Q
+    description: PLL_Q aka PLL48M2CLK clock selected
+    value: 2
+  - name: MSI
+    description: MSI clock selected
+    value: 3
+enum/DFSDMSEL:
+  bit_size: 1
+  variants:
+  - name: PCLK2
+    description: APB2 clock (PCLK2) selected as DFSDM kernel clock
+    value: 0
+  - name: SYS
+    description: System clock selected as DFSDM kernel clock
+    value: 1
 enum/HPRE:
   bit_size: 4
   variants:
@@ -1706,6 +1613,96 @@ enum/HPRE:
   - name: Div512
     description: system clock divided by 512
     value: 15
+enum/I2C1SEL:
+  bit_size: 2
+  variants:
+  - name: PCLK1
+    description: PCLK clock selected
+    value: 0
+  - name: SYS
+    description: SYSCLK clock selected
+    value: 1
+  - name: HSI
+    description: HSI clock selected
+    value: 2
+enum/I2C2SEL:
+  bit_size: 2
+  variants:
+  - name: PCLK1
+    description: PCLK clock selected
+    value: 0
+  - name: SYS
+    description: SYSCLK clock selected
+    value: 1
+  - name: HSI
+    description: HSI clock selected
+    value: 2
+enum/I2C3SEL:
+  bit_size: 2
+  variants:
+  - name: PCLK1
+    description: PCLK clock selected
+    value: 0
+  - name: SYS
+    description: SYSCLK clock selected
+    value: 1
+  - name: HSI
+    description: HSI clock selected
+    value: 2
+enum/LPTIM1SEL:
+  bit_size: 2
+  variants:
+  - name: PCLK1
+    description: PCLK clock selected
+    value: 0
+  - name: LSI
+    description: LSI clock selected
+    value: 1
+  - name: HSI
+    description: HSI clock selected
+    value: 2
+  - name: LSE
+    description: LSE clock selected
+    value: 3
+enum/LPTIM2SEL:
+  bit_size: 2
+  variants:
+  - name: PCLK1
+    description: PCLK clock selected
+    value: 0
+  - name: LSI
+    description: LSI clock selected
+    value: 1
+  - name: HSI
+    description: HSI clock selected
+    value: 2
+  - name: LSE
+    description: LSE clock selected
+    value: 3
+enum/LPUART1SEL:
+  bit_size: 2
+  variants:
+  - name: PCLK1
+    description: PCLK clock selected
+    value: 0
+  - name: SYS
+    description: SYSCLK clock selected
+    value: 1
+  - name: HSI
+    description: HSI clock selected
+    value: 2
+  - name: LSE
+    description: LSE clock selected
+    value: 3
+enum/LSCOSEL:
+  bit_size: 1
+  variants:
+  - name: LSI
+    description: LSI clock selected
+    value: 0
+  - name: LSE
+    description: LSE clock selected
+    value: 1
 enum/LSEDRV:
   bit_size: 2
   variants:
@@ -1742,16 +1739,16 @@ enum/MCOPRE:
 enum/MCOSEL:
   bit_size: 4
   variants:
-  - name: NoClock
+  - name: DISABLE
     description: No clock
     value: 0
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK clock selected
     value: 1
   - name: MSI
     description: MSI oscillator clock selected
     value: 2
-  - name: HSI16
+  - name: HSI
     description: HSI oscillator clock selected
     value: 3
   - name: HSE
@@ -1808,8 +1805,17 @@ enum/MSIRANGE:
   - name: Range48M
     description: range 11 around 48 MHz
     value: 11
+enum/MSIRGSEL:
+  bit_size: 1
+  variants:
+  - name: CSR
+    description: MSI Range is provided by MSISRANGE[3:0] in RCC_CSR register
+    value: 0
+  - name: CR
+    description: MSI Range is provided by MSIRANGE[3:0] in the RCC_CR register
+    value: 1
 enum/PLLM:
-  bit_size: 4
+  bit_size: 3
   variants:
   - name: Div1
     value: 0
@@ -1827,22 +1833,6 @@ enum/PLLM:
     value: 6
   - name: Div8
     value: 7
-  - name: Div9
-    value: 8
-  - name: Div10
-    value: 9
-  - name: Div11
-    value: 10
-  - name: Div12
-    value: 11
-  - name: Div13
-    value: 12
-  - name: Div14
-    value: 13
-  - name: Div15
-    value: 14
-  - name: Div16
-    value: 15
 enum/PLLN:
   bit_size: 7
   variants:
@@ -2087,7 +2077,7 @@ enum/PLLN:
   - name: Mul127
     value: 127
 enum/PLLP:
-  bit_size: 7
+  bit_size: 5
   variants:
   - name: Div2
     value: 2
@@ -2181,13 +2171,13 @@ enum/PLLR:
 enum/PLLSRC:
   bit_size: 2
   variants:
-  - name: None
+  - name: DISABLE
     description: No clock sent to PLL
     value: 0
   - name: MSI
     description: MSI selected as PLL input clock
     value: 1
-  - name: HSI16
+  - name: HSI
     description: HSI selected as PLL input clock
     value: 2
   - name: HSE
@@ -2214,7 +2204,7 @@ enum/PPRE:
 enum/RTCSEL:
   bit_size: 2
   variants:
-  - name: NoClock
+  - name: DISABLE
     description: No clock
     value: 0
   - name: LSE
@@ -2226,13 +2216,43 @@ enum/RTCSEL:
   - name: HSE
     description: HSE oscillator clock divided by 32 used as the RTC clock
     value: 3
+enum/SAI1SEL:
+  bit_size: 2
+  variants:
+  - name: PLLSAI1_P
+    description: PLLSAI1CLK clock is selected as SAIx clock
+    value: 0
+  - name: PLLSAI2_P
+    description: PLLSAI2CLK clock is selected as SAIx clock
+    value: 1
+  - name: PLL1_P
+    description: PLLSAI3CLK clock is selected as SAIx clock
+    value: 2
+  - name: SAI1_EXTCLK
+    description: External clock SAIx_EXTCLK clock selected as SAIx clock
+    value: 3
+enum/SAI2SEL:
+  bit_size: 2
+  variants:
+  - name: PLLSAI1_P
+    description: PLLSAI1CLK clock is selected as SAIx clock
+    value: 0
+  - name: PLLSAI2_P
+    description: PLLSAI2CLK clock is selected as SAIx clock
+    value: 1
+  - name: PLL1_P
+    description: PLLSAI3CLK clock is selected as SAIx clock
+    value: 2
+  - name: SAI2_EXTCLK
+    description: External clock SAIx_EXTCLK clock selected as SAIx clock
+    value: 3
 enum/STOPWUCK:
   bit_size: 1
   variants:
   - name: MSI
     description: MSI oscillator selected as wake-up from Stop clock
     value: 0
-  - name: HSI16
+  - name: HSI
     description: HSI oscillator selected as wake-up from Stop clock
     value: 1
 enum/SW:
@@ -2241,12 +2261,94 @@ enum/SW:
   - name: MSI
     description: MSI selected as system clock
     value: 0
-  - name: HSI16
+  - name: HSI
     description: HSI selected as system clock
     value: 1
   - name: HSE
     description: HSE selected as system clock
     value: 2
-  - name: PLL
+  - name: PLL1_R
     description: PLL selected as system clock
+    value: 3
+enum/SWPMI1SEL:
+  bit_size: 1
+  variants:
+  - name: PCLK1
+    value: 0
+  - name: HSI
+    value: 1
+enum/UART4SEL:
+  bit_size: 2
+  variants:
+  - name: PCLK1
+    description: PCLK clock selected
+    value: 0
+  - name: SYS
+    description: SYSCLK clock selected
+    value: 1
+  - name: HSI
+    description: HSI clock selected
+    value: 2
+  - name: LSE
+    description: LSE clock selected
+    value: 3
+enum/UART5SEL:
+  bit_size: 2
+  variants:
+  - name: PCLK1
+    description: PCLK clock selected
+    value: 0
+  - name: SYS
+    description: SYSCLK clock selected
+    value: 1
+  - name: HSI
+    description: HSI clock selected
+    value: 2
+  - name: LSE
+    description: LSE clock selected
+    value: 3
+enum/USART1SEL:
+  bit_size: 2
+  variants:
+  - name: PCLK1
+    description: PCLK clock selected
+    value: 0
+  - name: SYS
+    description: SYSCLK clock selected
+    value: 1
+  - name: HSI
+    description: HSI clock selected
+    value: 2
+  - name: LSE
+    description: LSE clock selected
+    value: 3
+enum/USART2SEL:
+  bit_size: 2
+  variants:
+  - name: PCLK1
+    description: PCLK clock selected
+    value: 0
+  - name: SYS
+    description: SYSCLK clock selected
+    value: 1
+  - name: HSI
+    description: HSI clock selected
+    value: 2
+  - name: LSE
+    description: LSE clock selected
+    value: 3
+enum/USART3SEL:
+  bit_size: 2
+  variants:
+  - name: PCLK1
+    description: PCLK clock selected
+    value: 0
+  - name: SYS
+    description: SYSCLK clock selected
+    value: 1
+  - name: HSI
+    description: HSI clock selected
+    value: 2
+  - name: LSE
+    description: LSE clock selected
     value: 3

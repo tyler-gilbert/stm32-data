@@ -593,8 +593,8 @@ fieldset/CICR:
     description: LSE ready Interrupt clear
     bit_offset: 1
     bit_size: 1
-  - name: HSI16RDYC
-    description: HSI16 ready Interrupt clear
+  - name: HSIRDYC
+    description: HSI ready Interrupt clear
     bit_offset: 2
     bit_size: 1
   - name: HSERDYC
@@ -628,8 +628,8 @@ fieldset/CIER:
     description: LSE ready interrupt flag
     bit_offset: 1
     bit_size: 1
-  - name: HSI16RDYIE
-    description: HSI16 ready interrupt flag
+  - name: HSIRDYIE
+    description: HSI ready interrupt flag
     bit_offset: 2
     bit_size: 1
   - name: HSERDYIE
@@ -659,8 +659,8 @@ fieldset/CIFR:
     description: LSE ready interrupt flag
     bit_offset: 1
     bit_size: 1
-  - name: HSI16RDYF
-    description: HSI16 ready interrupt flag
+  - name: HSIRDYF
+    description: HSI ready interrupt flag
     bit_offset: 2
     bit_size: 1
   - name: HSERDYF
@@ -686,27 +686,27 @@ fieldset/CIFR:
 fieldset/CR:
   description: Clock control register
   fields:
-  - name: HSI16ON
+  - name: HSION
     description: 16 MHz high-speed internal clock enable
     bit_offset: 0
     bit_size: 1
-  - name: HSI16KERON
+  - name: HSIKERON
     description: High-speed internal clock enable bit for some IP kernels
     bit_offset: 1
     bit_size: 1
-  - name: HSI16RDY
+  - name: HSIRDY
     description: Internal high-speed clock ready flag
     bit_offset: 2
     bit_size: 1
-  - name: HSI16DIVEN
-    description: HSI16DIVEN
+  - name: HSIDIVEN
+    description: HSIDIVEN
     bit_offset: 3
     bit_size: 1
-  - name: HSI16DIVF
-    description: HSI16DIVF
+  - name: HSIDIVF
+    description: HSIDIVF
     bit_offset: 4
     bit_size: 1
-  - name: HSI16OUTEN
+  - name: HSIOUTEN
     description: 16 MHz high-speed internal clock output enable
     bit_offset: 5
     bit_size: 1
@@ -916,11 +916,11 @@ fieldset/GPIOSMEN:
 fieldset/ICSCR:
   description: Internal clock sources calibration register
   fields:
-  - name: HSI16CAL
+  - name: HSICAL
     description: nternal high speed clock calibration
     bit_offset: 0
     bit_size: 8
-  - name: HSI16TRIM
+  - name: HSITRIM
     description: High speed internal clock trimming
     bit_offset: 8
     bit_size: 5
@@ -970,26 +970,26 @@ enum/HPRE:
 enum/ICSEL:
   bit_size: 2
   variants:
-  - name: APB
+  - name: PCLK1
     description: APB clock selected as peripheral clock
     value: 0
-  - name: SYSTEM
+  - name: SYS
     description: System clock selected as peripheral clock
     value: 1
-  - name: HSI16
-    description: HSI16 clock selected as peripheral clock
+  - name: HSI
+    description: HSI clock selected as peripheral clock
     value: 2
 enum/LPTIMSEL:
   bit_size: 2
   variants:
-  - name: APB
+  - name: PCLK1
     description: APB clock selected as Timer clock
     value: 0
   - name: LSI
     description: LSI clock selected as Timer clock
     value: 1
-  - name: HSI16
-    description: HSI16 clock selected as Timer clock
+  - name: HSI
+    description: HSI clock selected as Timer clock
     value: 2
   - name: LSE
     description: LSE clock selected as Timer clock
@@ -1030,13 +1030,13 @@ enum/MCOPRE:
 enum/MCOSEL:
   bit_size: 4
   variants:
-  - name: NoClock
+  - name: DISABLE
     description: No clock
     value: 0
-  - name: SYSCLK
+  - name: SYS
     description: SYSCLK clock selected
     value: 1
-  - name: HSI16
+  - name: HSI
     description: HSI oscillator clock selected
     value: 2
   - name: MSI
@@ -1057,30 +1057,27 @@ enum/MCOSEL:
 enum/MSIRANGE:
   bit_size: 3
   variants:
-  - name: Range0
+  - name: Range66K
     description: range 0 around 65.536 kHz
     value: 0
-  - name: Range1
+  - name: Range131K
     description: range 1 around 131.072 kHz
     value: 1
-  - name: Range2
+  - name: Range262K
     description: range 2 around 262.144 kHz
     value: 2
-  - name: Range3
+  - name: Range524K
     description: range 3 around 524.288 kHz
     value: 3
-  - name: Range4
+  - name: Range1M
     description: range 4 around 1.048 MHz
     value: 4
-  - name: Range5
+  - name: Range2M
     description: range 5 around 2.097 MHz (reset value)
     value: 5
-  - name: Range6
+  - name: Range4M
     description: range 6 around 4.194 MHz
     value: 6
-  - name: Range7
-    description: not allowed
-    value: 7
 enum/PLLDIV:
   bit_size: 2
   variants:
@@ -1126,7 +1123,7 @@ enum/PLLMUL:
 enum/PLLSRC:
   bit_size: 1
   variants:
-  - name: HSI16
+  - name: HSI
     description: HSI selected as PLL input clock
     value: 0
   - name: HSE
@@ -1168,7 +1165,7 @@ enum/RTCPRE:
 enum/RTCSEL:
   bit_size: 2
   variants:
-  - name: NoClock
+  - name: DISABLE
     description: No clock
     value: 0
   - name: LSE
@@ -1186,8 +1183,8 @@ enum/STOPWUCK:
   - name: MSI
     description: Internal 64 KHz to 4 MHz (MSI) oscillator selected as wake-up from Stop clock
     value: 0
-  - name: HSI16
-    description: Internal 16 MHz (HSI) oscillator selected as wake-up from Stop clock (or HSI16/4 if HSI16DIVEN=1)
+  - name: HSI
+    description: Internal 16 MHz (HSI) oscillator selected as wake-up from Stop clock (or HSI/4 if HSIDIVEN=1)
     value: 1
 enum/SW:
   bit_size: 2
@@ -1195,26 +1192,26 @@ enum/SW:
   - name: MSI
     description: MSI oscillator used as system clock
     value: 0
-  - name: HSI16
+  - name: HSI
     description: HSI oscillator used as system clock
     value: 1
   - name: HSE
     description: HSE oscillator used as system clock
     value: 2
-  - name: PLL
+  - name: PLL1_R
     description: PLL used as system clock
     value: 3
 enum/UARTSEL:
   bit_size: 2
   variants:
-  - name: APB
+  - name: PCLK1
     description: APB clock selected as peripheral clock
     value: 0
-  - name: SYSTEM
+  - name: SYS
     description: System clock selected as peripheral clock
     value: 1
-  - name: HSI16
-    description: HSI16 clock selected as peripheral clock
+  - name: HSI
+    description: HSI clock selected as peripheral clock
     value: 2
   - name: LSE
     description: LSE clock selected as peripheral clock
