@@ -277,6 +277,7 @@ impl PeriMatcher {
             (".*:SAI:sai1_v2_1", ("sai", "v4", "SAI")),
             ("STM32U5.*:SAI[12]:.*", ("sai", "v4", "SAI")),
             ("STM32U5.*:ICACHE:.*", ("icache", "v1", "ICACHE")),
+            ("STM32U5.*:CORDIC:.*", ("cordic", "v1", "CORDIC")),
             (".*:SDIO:sdmmc_v1_2", ("sdmmc", "v1", "SDMMC")),
             (".*:SDMMC:sdmmc_v1_3", ("sdmmc", "v1", "SDMMC")),
             (".*:SPDIFRX:spdifrx1_v1_0", ("spdifrx", "v1", "SPDIFRX")),
