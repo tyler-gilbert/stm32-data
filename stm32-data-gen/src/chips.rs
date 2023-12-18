@@ -192,6 +192,7 @@ impl PeriMatcher {
             (".*:ADC:aditf_v2_5F1", ("adc", "f1", "ADC")),
             (".*:ADC:aditf5_v1_1", ("adc", "f3", "ADC")),
             (".*:ADC:aditf_v2_5", ("adc", "f3_v2", "ADC")),
+            (".*:ADC:aditf3_v1_1", ("adc", "f3_v1_1", "ADC")),
             (".*:ADC:aditf4_v1_1", ("adc", "v1", "ADC")),
             (".*:ADC:aditf2_v1_1", ("adc", "v2", "ADC")),
             (".*:ADC:aditf5_v2_0", ("adc", "v3", "ADC")),
@@ -250,7 +251,7 @@ impl PeriMatcher {
             (".*:HRTIM:hrtim_G4", ("hrtim", "v2", "HRTIM")),
             (".*:LTDC:lcdtft1_v1_1", ("ltdc", "v1", "LTDC")),
             (".*:MDIOS:mdios1_v1_0", ("mdios", "v1", "MDIOS")),
-            (".*:QUADSPI:quadspi1_v1_0", ("quadspi", "v1", "QUADSPI")),
+            (".*:QUADSPI:.*", ("quadspi", "v1", "QUADSPI")),
             ("STM32F1.*:BKP.*", ("bkp", "v1", "BKP")),
             (".*:RTC:rtc1_v1_1", ("rtc", "v1", "RTC")),
             ("STM32F0.*:RTC:rtc2_.*", ("rtc", "v2f0", "RTC")),
@@ -468,7 +469,10 @@ impl PeriMatcher {
             ("STM32H7.*:DMA.*", ("dma", "v1", "DMA")),
             (".*:DMA.*", ("bdma", "v1", "DMA")),
             (".*:CAN:bxcan1_v1_1.*", ("can", "bxcan", "CAN")),
-            (".*:FDCAN:fdcan1_v1_0.*", ("can", "fdcan", "FDCAN")),
+            ("STM32H7.*:FDCAN:fdcan1_v1_[01].*", ("can", "fdcan_h7", "FDCAN")),
+            (".*:FDCAN:fdcan1_v1_[01].*", ("can", "fdcan_v1", "FDCAN")),
+            ("STM32H7.*:FDCANRAM.*", ("fdcanram", "h7", "FDCANRAM")),
+            (".*:FDCANRAM.*", ("fdcanram", "v1", "FDCANRAM")),
             // # stm32F4 CRC peripheral
             // # ("STM32F4*:CRC:CRC:crc_f4")
             // # v1: F1, F2, F4, L1
@@ -516,6 +520,7 @@ impl PeriMatcher {
             ("STM32WB55.*:TSC:.*", ("tsc", "v2", "TSC")),
             ("STM32L[045].*:TSC:.*", ("tsc", "v3", "TSC")),
             ("STM32U5.*:TSC:.*", ("tsc", "v3", "TSC")),
+            ("*:VREFINTCAL:.*", ("vrefintcal", "v1", "VREFINTCAL")),
         ];
 
         Self {
@@ -879,9 +884,43 @@ fn process_core(
         peri_kinds.insert(pname, pkind.to_string());
     }
     const GHOST_PERIS: &[&str] = &[
-        "GPIOA", "GPIOB", "GPIOC", "GPIOD", "GPIOE", "GPIOF", "GPIOG", "GPIOH", "GPIOI", "GPIOJ", "GPIOK", "GPIOL",
-        "GPIOM", "GPION", "GPIOO", "GPIOP", "GPIOQ", "GPIOR", "GPIOS", "GPIOT", "DMA1", "DMA2", "BDMA", "DMAMUX",
-        "DMAMUX1", "DMAMUX2", "SBS", "SYSCFG", "EXTI", "FLASH", "DBGMCU", "CRS", "PWR", "AFIO", "BKP", "USBRAM",
+        "GPIOA",
+        "GPIOB",
+        "GPIOC",
+        "GPIOD",
+        "GPIOE",
+        "GPIOF",
+        "GPIOG",
+        "GPIOH",
+        "GPIOI",
+        "GPIOJ",
+        "GPIOK",
+        "GPIOL",
+        "GPIOM",
+        "GPION",
+        "GPIOO",
+        "GPIOP",
+        "GPIOQ",
+        "GPIOR",
+        "GPIOS",
+        "GPIOT",
+        "DMA1",
+        "DMA2",
+        "BDMA",
+        "DMAMUX",
+        "DMAMUX1",
+        "DMAMUX2",
+        "SBS",
+        "SYSCFG",
+        "EXTI",
+        "FLASH",
+        "DBGMCU",
+        "CRS",
+        "PWR",
+        "AFIO",
+        "BKP",
+        "USBRAM",
+        "VREFINTCAL",
     ];
     for pname in GHOST_PERIS {
         if let Entry::Vacant(entry) = peri_kinds.entry(pname.to_string()) {
@@ -892,6 +931,29 @@ fn process_core(
     }
     if peri_kinds.contains_key("BDMA1") {
         peri_kinds.remove("BDMA");
+    }
+    let fdcans = peri_kinds
+        .keys()
+        .filter_map(|pname| {
+            regex!(r"^FDCAN(?<idx>[0-9]+)$")
+                .captures(pname)
+                .map(|cap| cap["idx"].to_string())
+        })
+        .collect::<Vec<_>>();
+    if !fdcans.is_empty() {
+        if chip_name.starts_with("STM32H7") {
+            // H7 has one message RAM shared between FDCANs
+            peri_kinds
+                .entry("FDCANRAM".to_string())
+                .or_insert("unknown".to_string());
+        } else {
+            // Other chips with FDCANs have separate message RAM per module
+            for fdcan in fdcans {
+                peri_kinds
+                    .entry(format!("FDCANRAM{}", fdcan))
+                    .or_insert("unknown".to_string());
+            }
+        }
     }
     // get possible used GPIOs for each peripheral from the chip xml
     // it's not the full info we would want (stuff like AFIO info which comes from GPIO xml),
@@ -935,10 +997,21 @@ fn process_core(
             continue;
         }
 
-        let addr = if chip_name.starts_with("STM32F0") && pname == "ADC" {
+        let addr = if (chip_name.starts_with("STM32F0") || chip_name.starts_with("STM32L1")) && pname == "ADC" {
             defines.get_peri_addr("ADC1")
         } else if chip_name.starts_with("STM32H7") && pname == "HRTIM" {
             defines.get_peri_addr("HRTIM1")
+        } else if let Some(cap) = regex!(r"^FDCANRAM(?<idx>[0-9]+)$").captures(&pname) {
+            defines.get_peri_addr("FDCANRAM").and_then(|addr| {
+                if chip_name.starts_with("STM32H7") {
+                    Some(addr)
+                } else {
+                    let idx = u32::from_str_radix(&cap["idx"], 10).unwrap();
+                    // FIXME: this offset should not be hardcoded, but I think
+                    // it appears in no data sources (only in RMs)
+                    Some(addr + (idx - 1) * 0x350)
+                }
+            })
         } else {
             defines.get_peri_addr(&pname)
         };

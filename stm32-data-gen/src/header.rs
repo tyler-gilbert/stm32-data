@@ -160,6 +160,8 @@ impl Defines {
     pub fn get_peri_addr(&self, pname: &str) -> Option<u32> {
         const ALT_PERI_DEFINES: &[(&str, &[&str])] = &[
             ("DBGMCU", &["DBGMCU_BASE", "DBG_BASE"]),
+            ("QUADSPI", &["QUADSPI_BASE", "QSPI_R", "QSPI_R_BASE", "QSPI_REG_BASE"]),
+            ("QUADSPI1", &["QUADSPI1_BASE", "QSPI_R", "QSPI_R_BASE", "QSPI_REG_BASE"]),
             ("FLASH", &["FLASH_R_BASE", "FLASH_REG_BASE"]),
             (
                 "ADC_COMMON",
@@ -174,6 +176,8 @@ impl Defines {
                 "USBRAM",
                 &["USB_PMAADDR", "USB_DRD_PMAADDR", "USB_PMAADDR_NS", "USB_DRD_PMAADDR_NS"],
             ),
+            ("FDCANRAM", &["SRAMCAN_BASE", "SRAMCAN_BASE_NS"]),
+            ("VREFINTCAL", &["VREFINT_CAL_ADDR_CMSIS"]),
         ];
         let alt_peri_defines: HashMap<_, _> = ALT_PERI_DEFINES.iter().copied().collect();
 
