@@ -71,7 +71,7 @@ fieldset/BSMXCR:
     description: Bitstream selection.
     bit_offset: 0
     bit_size: 5
-    enum: BBSSEL
+    enum: BSSEL
   - name: BSMXACTIVE
     description: BSMX active flag. This bit is set and cleared by hardware. It is used by the application to check if the BSMX is effectively enabled (active) or not. BSSEL[4:0] can only be updated when BSMXACTIVE is set to 0. This BSMXACTIVE flag cannot go to 0 if DFLT0 is enabled.
     bit_offset: 31
@@ -168,10 +168,12 @@ fieldset/DFLTCR:
     description: RXFIFO threshold selection.
     bit_offset: 2
     bit_size: 1
+    enum: RXFIFO
   - name: ACQMOD
     description: DFLT trigger mode.
     bit_offset: 4
     bit_size: 3
+    enum: ACQMOD
   - name: TRGSRC
     description: DFLT trigger signal selection.
     bit_offset: 12
@@ -314,6 +316,7 @@ fieldset/SADCFGR:
     description: SNTHR.
     bit_offset: 0
     bit_size: 4
+    enum: SNTHR
   - name: ANSLP
     description: ANSLP.
     bit_offset: 4
@@ -322,10 +325,12 @@ fieldset/SADCFGR:
     description: LFRNB.
     bit_offset: 8
     bit_size: 3
+    enum: LFRNB
   - name: HGOVR
     description: Hangover time window.
     bit_offset: 12
     bit_size: 3
+    enum: HGOVR
   - name: ANMIN
     description: ANMIN.
     bit_offset: 16
@@ -620,7 +625,7 @@ enum/SITFMOD:
   - name: ManchesterFalling
     description: Manchester mode rising edge = logic 0, falling edge = logic 1.
     value: 2
-  - name: ManchesterFalling
+  - name: ManchesterRising
     description: Manchester mode rising edge = logic 1, falling edge = logic 0.
     value: 3
 enum/BSSEL:
@@ -692,6 +697,116 @@ enum/HPFC:
   - name: Maximum
     description: Cut-off frequency = 0.00950 x FPCM
     value: 3
+enum/ACQMOD:
+  description: DFLT trigger mode. This bitfield is set and cleared by software. It is used to select the trigger mode of the DFLT0.
+  bit_size: 3
+  variants:
+  - name: AsynchronousContinuous
+    description: Asynchronous continuous acquisition mode.
+    value: 0
+  - name: AsynchronousSingleShot
+    description: Asynchronous single-shot acquisition mode
+    value: 1
+  - name: SyncronousContinuous
+    description: Synchronous continuous acquisition mode.
+    value: 2
+  - name: SyncronousSingleShot
+    description: Synchronous single-shot acquisition mode.
+    value: 3
+  - name: WindowContinuous
+    description: Window continuous acquisition mode.
+    value: 4
+enum/RXFIFO:
+  description: RXFIFO threshold selection. This bitfield is set and cleared by software. It is used to select the RXFIFO threshold.
+  bit_size: 1
+  variants:
+  - name: NotEmpty
+    description: RXFIFO threshold event generated when the RXFIFO is not empty
+    value: 0
+  - name: HalfFull
+    description: RXFIFO threshold event generated when the RXFIFO is half-full
+    value: 1
+enum/HGOVR:
+  description: Hangover time window. This bitfield is set and cleared by software. It is used to select the hangover time window.
+  bit_size: 3
+  variants:
+  - name: Frames 4
+    description: SAD back to MONITOR state if sound is below threshold for 4 frames.
+    value: 0
+  - name: Frames 8
+    description: SAD back to MONITOR state if sound is below threshold for 4 frames.
+    value: 1
+  - name: Frames 16
+    description: SAD back to MONITOR state if sound is below threshold for 4 frames.
+    value: 2
+  - name: Frames 32
+    description: SAD back to MONITOR state if sound is below threshold for 4 frames.
+    value: 3
+  - name: Frames 64
+    description: SAD back to MONITOR state if sound is below threshold for 4 frames.
+    value: 4
+  - name: Frames 128
+    description: SAD back to MONITOR state if sound is below threshold for 4 frames.
+    value: 5
+  - name: Frames 256
+    description: SAD back to MONITOR state if sound is below threshold for 4 frames.
+    value: 6
+  - name: Frames 512
+    description: SAD back to MONITOR state if sound is below threshold for 4 frames.
+    value: 7
+enum/LFRNB:
+  description: LFRNB. This bitfield is set and cleared by software. It is used to define the number of learning frames to perform the first estimate of the noise level.
+  bit_size: 3
+  variants:
+  - name: Frames 2
+    description: 2 samples.
+    value: 0
+  - name: Frames 4
+    description: 4 samples.
+    value: 1
+  - name: Frames 8
+    description: 8 samples.
+    value: 2
+  - name: Frames 16
+    description: 16 samples.
+    value: 3
+  - name: Frames 32
+    description: 32 samples.
+    value: 4
+enum/SNTHR:
+  description: SNTHR. This bitfield is set and cleared by software. It is used to select the gain to be applied at CIC output. If the application attempts to write a new gain value while the previous one is not yet applied, this new gain value is ignored. Reading back this bitfield informs the application on the current gain value.
+  bit_size: 4
+  variants:
+  - name: NOISE PLUS 3_5
+    description: Threshold is 3.5 dB higher than ANLVL
+    value: 0
+  - name: NOISE PLUS 6_0
+    description: Threshold is 6.0 dB higher than ANLVL
+    value: 1
+  - name: NOISE PLUS 9_5
+    description: Threshold is 9.5 dB higher than ANLVL
+    value: 2
+  - name: NOISE PLUS 12
+    description: Threshold is 12 dB higher than ANLVL
+    value: 3
+  - name: NOISE PLUS 15_6
+    description: Threshold is 15.6 dB higher than ANLVL
+    value: 4
+  - name: NOISE PLUS 18
+    description: Threshold is 18 dB higher than ANLVL
+    value: 5
+  - name: NOISE PLUS 21_6
+    description: Threshold is 21.6 dB higher than ANLVL
+    value: 6
+  - name: NOISE PLUS 24_1
+    description: Threshold is 24.1 dB higher than ANLVL
+    value: 7
+  - name: NOISE PLUS 27_6
+    description: Threshold is 27.6 dB higher than ANLVL
+    value: 8
+  - name: NOISE PLUS 30_1
+    description: Threshold is 30.1 dB higher than ANLVL
+    value: 9
 
 
 
